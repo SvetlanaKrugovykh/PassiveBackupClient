@@ -9,7 +9,7 @@ const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId, numChunks) {
   const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
   try {
-    const chunkResponse = await axios.post(`${SERVICE_URL}fetch-chunk`, {
+    const chunkResponse = await axios.post(`${SERVICE_URL}fetch-сhunk`, {
       fileName: fileName,
       chunkId: chunkId.toString(),
     }, {
