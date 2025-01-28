@@ -29,6 +29,7 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
           const filePath = path.join(TARGET_DIRECTORY, fileName)
           fs.writeFileSync(filePath, Buffer.from(content, 'base64'))
           console.log(`File ${fileName} saved successfully`)
+          await confirmFileDownload(SERVICE_URL, fileName)
         } else if (chunks && chunks.length > 0) {
           for (const chunk of chunks) {
             await fetchAndSaveFile(SERVICE_URL, chunk.fileName, chunk.chunkId, chunk.numChunks)
@@ -40,5 +41,20 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
     }
   } catch (err) {
     console.error('Error getting files:', err)
+  }
+}
+
+async function confirmFileDownload(SERVICE_URL, fileName) {
+  try {
+    await axios.post(`${SERVICE_URL}confirm-file`, {
+      fileName: fileName,
+    }, {
+      headers: {
+        'Authorization': process.env.ACCESS_TOKEN
+      }
+    })
+    console.log(`File ${fileName} confirmed`)
+  } catch (err) {
+    console.error(`Error confirming of file ${fileName}:`, err)
   }
 }
