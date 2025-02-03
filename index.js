@@ -8,16 +8,29 @@ async function main() {
   const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
   ensureDirectory(TARGET_DIRECTORY)
 
-  const configPath = path.join(__dirname, 'data', 'config.json')
-  const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+  const dataDir = path.join(__dirname, 'data')
+  const configFiles = fs.readdirSync(dataDir).filter(file => file.endsWith('.json'))
 
-  for (const serverConfig of configData) {
-    const SERVICE_URL = serverConfig.SERVICE_URL
+  for (const configFile of configFiles) {
+    try {
+      const configPath = path.join(dataDir, configFile)
+      const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 
-    for (const { directory, patterns } of serverConfig.dirs_and_patterns) {
-      for (const pattern of patterns) {
-        await getFiles(SERVICE_URL, directory, pattern)
+      for (const serverConfig of configData) {
+        const SERVICE_URL = serverConfig.SERVICE_URL
+
+        for (const { directory, patterns } of serverConfig.dirs_and_patterns) {
+          for (const pattern of patterns) {
+            try {
+              await getFiles(SERVICE_URL, directory, pattern)
+            } catch (err) {
+              console.error(`Error getting files for pattern ${pattern} in directory ${directory}:`, err)
+            }
+          }
+        }
       }
+    } catch (err) {
+      console.error(`Error processing config file ${configFile}:`, err)
     }
   }
 }
