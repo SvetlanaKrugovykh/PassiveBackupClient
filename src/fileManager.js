@@ -21,7 +21,7 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern, zip) 
       headers: {
         'Authorization': process.env.ACCESS_TOKEN
       },
-      timeout: Number(process.env.TIMEOUT) || 600000
+      timeout: Number(process.env.TIMEOUT) || 6000000
     })
 
     for (const result of response.data) {
