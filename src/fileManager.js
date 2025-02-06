@@ -20,7 +20,8 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
     }, {
       headers: {
         'Authorization': process.env.ACCESS_TOKEN
-      }
+      },
+      timeout: Number(process.env.TIMEOUT) || 600000
     })
 
     for (const result of response.data) {
