@@ -4,13 +4,15 @@ const fs = require('fs').promises
 const fsSync = require('fs')
 const path = require('path')
 require('dotenv').config()
+const { getCurrentDateFormatted } = require('./utils')
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
+const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
 
 async function deleteChunk(fileName, chunkId) {
   try {
-    const chunkPath = path.join(TARGET_DIRECTORY, `${fileName}_chunk_${chunkId}`)
+    const chunkPath = path.join(dateDirectory, `${fileName}_chunk_${chunkId}`)
     await fs.access(chunkPath)
     await fs.unlink(chunkPath)
 
@@ -23,7 +25,6 @@ async function deleteChunk(fileName, chunkId) {
 }
 
 module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId, numChunks) {
-  const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
 
   try {
     const chunkResponse = await axios.post(`${SERVICE_URL}fetch-сhunk`, {

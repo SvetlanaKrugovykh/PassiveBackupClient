@@ -8,14 +8,14 @@ const { fetchAndSaveFile } = require('./fileDownloader')
 
 const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
 
-module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
+module.exports.getFiles = async function (SERVICE_URL, directory, pattern, zip) {
   const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
   ensureDirectory(dateDirectory)
 
   try {
     const response = await axios.post(`${SERVICE_URL}get-files`, {
       queries: [
-        { directory, pattern },
+        { directory, pattern, zip },
       ],
     }, {
       headers: {

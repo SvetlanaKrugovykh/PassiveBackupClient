@@ -24,10 +24,10 @@ async function main() {
 
         const SERVICE_URL = serverConfig.SERVICE_URL
 
-        for (const { directory, patterns } of serverConfig.dirs_and_patterns) {
+        for (const { directory, patterns, zip = false } of serverConfig.dirs_and_patterns) {
           for (const pattern of patterns) {
             try {
-              await getFiles(SERVICE_URL, directory, pattern)
+              await getFiles(SERVICE_URL, directory, pattern, zip)
             } catch (err) {
               console.error(`Error getting files for pattern ${pattern} in directory ${directory}:`, err)
             }
