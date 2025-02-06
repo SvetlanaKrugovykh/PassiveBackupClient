@@ -27,6 +27,11 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern, zip) 
     for (const result of response.data) {
       const { matchedFiles } = result
 
+      if (!Array.isArray(matchedFiles)) {
+        console.log('No files matched')
+        continue
+      }
+
       for (const file of matchedFiles) {
         const { fileName, chunks, content } = file
 
