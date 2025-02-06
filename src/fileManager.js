@@ -3,7 +3,7 @@ const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 require('dotenv').config()
-const { ensureDirectory } = require('./utils')
+const { ensureDirectory, getCurrentDateFormatted } = require('./utils')
 const { fetchAndSaveFile } = require('./fileDownloader')
 
 const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
