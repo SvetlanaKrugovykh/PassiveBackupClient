@@ -3,10 +3,14 @@ const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 require('dotenv').config()
+const { ensureDirectory } = require('./utils')
 const { fetchAndSaveFile } = require('./fileDownloader')
 
+const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
+
 module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
-  const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
+  const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
+  ensureDirectory(dateDirectory)
 
   try {
     const response = await axios.post(`${SERVICE_URL}get-files`, {
@@ -26,7 +30,7 @@ module.exports.getFiles = async function (SERVICE_URL, directory, pattern) {
         const { fileName, chunks, content } = file
 
         if (content) {
-          const filePath = path.join(TARGET_DIRECTORY, fileName)
+          const filePath = path.join(dateDirectory, fileName)
           fs.writeFileSync(filePath, Buffer.from(content, 'base64'))
           console.log(`File ${fileName} saved successfully`)
           await confirmFileDownload(SERVICE_URL, fileName)

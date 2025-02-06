@@ -17,6 +17,11 @@ async function main() {
       const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 
       for (const serverConfig of configData) {
+        if (serverConfig.skip) {
+          console.log(`Skipping configuration for server ${serverConfig.server}`)
+          continue
+        }
+
         const SERVICE_URL = serverConfig.SERVICE_URL
 
         for (const { directory, patterns } of serverConfig.dirs_and_patterns) {
