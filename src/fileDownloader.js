@@ -23,6 +23,7 @@ async function deleteChunk(fileName, chunkId) {
 }
 
 module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId, numChunks) {
+  const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
 
   try {
     const chunkResponse = await axios.post(`${SERVICE_URL}fetch-сhunk`, {
@@ -35,7 +36,7 @@ module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId
     })
 
     const chunkContent = Buffer.from(chunkResponse.data.content, 'base64')
-    const chunkPath = path.join(TARGET_DIRECTORY, `${fileName}_chunk_${chunkId}`)
+    const chunkPath = path.join(dateDirectory, `${fileName}_chunk_${chunkId}`)
 
     fsSync.writeFileSync(chunkPath, chunkContent)
     console.log(`Chunk ${chunkId} saved`)
@@ -45,11 +46,11 @@ module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId
     if (chunkId === numChunks) {
       console.log(`Collect file ${fileName} from chunks`)
 
-      const finalFilePath = path.join(TARGET_DIRECTORY, fileName)
+      const finalFilePath = path.join(dateDirectory, fileName)
       const finalFileStream = fsSync.createWriteStream(finalFilePath)
 
       for (let i = 1; i <= numChunks; i++) {
-        const chunkPath = path.join(TARGET_DIRECTORY, `${fileName}_chunk_${i}`)
+        const chunkPath = path.join(dateDirectory, `${fileName}_chunk_${i}`)
         const chunkData = fsSync.readFileSync(chunkPath)
         finalFileStream.write(chunkData)
       }
