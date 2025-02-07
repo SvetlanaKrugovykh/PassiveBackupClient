@@ -27,13 +27,14 @@ async function deleteChunk(fileName, chunkId) {
 module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId, numChunks) {
 
   try {
-    const chunkResponse = await axios.post(`${SERVICE_URL}fetch-сhunk`, {
+    const chunkResponse = await axios.post(`${SERVICE_URL}fetch-chunk`, {
       fileName: fileName,
       chunkId: chunkId.toString(),
     }, {
       headers: {
         'Authorization': ACCESS_TOKEN
-      }
+      },
+      timeout: 120000
     })
 
     const chunkContent = Buffer.from(chunkResponse.data.content, 'base64')
@@ -61,10 +62,15 @@ module.exports.fetchAndSaveFile = async function (SERVICE_URL, fileName, chunkId
       for (let i = 1; i <= numChunks; i++) {
         await deleteChunk(fileName, i)
       }
-      console.log(`File ${fileName} collected and saved ${finalFilePath}`)
+      console.log(`File ${fileName} collected and saved at ${finalFilePath}`)
     }
   } catch (err) {
     console.error(`Error while chunk downloading ${chunkId} - file ${fileName}:`, err)
+
+    if (err.code === 'ECONNRESET') {
+      console.log(`Retrying chunk download ${chunkId} for file ${fileName}`)
+      await fetchAndSaveFile(SERVICE_URL, fileName, chunkId, numChunks)
+    }
   }
 }
 
