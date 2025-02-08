@@ -3,7 +3,7 @@ const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 require('dotenv').config()
-const { ensureDirectory, getCurrentDateFormatted } = require('./utils')
+const { ensureDirectory, getCurrentDateFormatted, getYesterdayDateFormatted } = require('./utils')
 const { fetchAndSaveFile } = require('./fileDownloader')
 
 const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
@@ -11,6 +11,12 @@ const TARGET_DIRECTORY = process.env.TARGET_DIRECTORY
 module.exports.getFiles = async function (SERVICE_URL, directory, pattern, zip) {
   const dateDirectory = path.join(TARGET_DIRECTORY, getCurrentDateFormatted())
   ensureDirectory(dateDirectory)
+
+  const yesterdayDate = getYesterdayDateFormatted()
+
+  if (pattern.includes('_yyyy_mm_dd')) {
+    pattern = pattern.replace('_yyyy_mm_dd', `_${yesterdayDate}`)
+  }
 
   try {
     const response = await axios.post(`${SERVICE_URL}get-files`, {
